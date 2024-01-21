@@ -35,7 +35,7 @@ In this task, you are required to develop a small script that outputs the conten
 
 ### Tips
 
-For imports in Node.js, use [CommonJS modules](https://nodejs.org/docs/latest/api/modules.html#modules_modules_commonjs_modules).  
+For imports in Node.js, use [CommonJS modules](https://nodejs.org/docs/latest/api/modules.html#modules_modules_commonjs_modules).
 Despite the fact that Node.js now has almost full support for **ECMAScript modules** (`import/export`), this approach is not yet fully stable, and the vast majority of code you encounter will be written using CommonJS:
 
 ```js
