@@ -14,38 +14,58 @@ fs.mkdir(destinationFolder, { recursive: true }, (err) => {
 });
 
 function copyFolderRecursive(source, destination) {
-  fs.readdir(source, (err, files) => {
+  fs.readdir(destination, (err, existingFiles) => {
     if (err) {
-      console.error('Error reading source folder:', err);
+      console.error('Error reading destination folder:', err);
       return;
     }
 
-    files.forEach((file) => {
-      const srcFile = path.join(source, file);
-      const destFile = path.join(destination, file);
+    existingFiles.forEach((existingFile) => {
+      const srcFilePath = path.join(source, existingFile);
+      const destFilePath = path.join(destination, existingFile);
 
-      fs.stat(srcFile, (err, stats) => {
-        if (err) {
-          console.error('Error getting file stats:', err);
-          return;
-        }
+      if (!fs.existsSync(srcFilePath)) {
+        fs.unlink(destFilePath, (err) => {
+          if (err) {
+            console.error('Error deleting file:', err);
+          }
+        });
+      }
+    });
 
-        if (stats.isFile()) {
-          fs.copyFile(srcFile, destFile, (err) => {
-            if (err) {
-              console.error('Error copying file:', err);
-            }
-          });
-        } else if (stats.isDirectory()) {
-          fs.mkdir(destFile, { recursive: true }, (err) => {
-            if (err && err.code !== 'EEXIST') {
-              console.error('Error creating destination folder:', err);
-              return;
-            }
+    fs.readdir(source, (err, files) => {
+      if (err) {
+        console.error('Error reading source folder:', err);
+        return;
+      }
 
-            copyFolderRecursive(srcFile, destFile);
-          });
-        }
+      files.forEach((file) => {
+        const srcFile = path.join(source, file);
+        const destFile = path.join(destination, file);
+
+        fs.stat(srcFile, (err, stats) => {
+          if (err) {
+            console.error('Error getting file stats:', err);
+            return;
+          }
+
+          if (stats.isFile()) {
+            fs.copyFile(srcFile, destFile, (err) => {
+              if (err) {
+                console.error('Error copying file:', err);
+              }
+            });
+          } else if (stats.isDirectory()) {
+            fs.mkdir(destFile, { recursive: true }, (err) => {
+              if (err && err.code !== 'EEXIST') {
+                console.error('Error creating destination folder:', err);
+                return;
+              }
+
+              copyFolderRecursive(srcFile, destFile);
+            });
+          }
+        });
       });
     });
   });
