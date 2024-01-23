@@ -15,7 +15,9 @@ fs.open(filePath, 'a', (err, fd) => {
 
   const writableStream = fs.createWriteStream(null, { fd });
 
-  console.log('Enter text to write to the file (or "exit" to quit):');
+  console.log(
+    'Enter text to write to the file (come out "exit" or "ctrl/cmd + c" to quit):',
+  );
 
   readline.on('line', (input) => {
     if (input.trim() === 'exit') {
@@ -24,11 +26,13 @@ fs.open(filePath, 'a', (err, fd) => {
       process.exit();
     } else {
       writableStream.write(`${input}\n`);
-      console.log('Enter more text (or "exit" to quit):');
+      console.log(
+        'Enter more text (come out "exit" or "ctrl/cmd + c" to quit):',
+      );
     }
   });
 
-  process.on('SIGINT', () => {
+  readline.on('SIGINT', () => {
     console.log('Goodbye!');
     writableStream.end();
     process.exit();
